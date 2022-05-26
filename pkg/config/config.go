@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"gopkg.in/mcuadros/go-defaults.v1"
 	"gopkg.in/yaml.v3"
 )
 
@@ -22,7 +23,7 @@ type Completion struct {
 	Patterns      []string      `yaml:"patterns"`
 	Source        string        `yaml:"source"`
 	Finder        FinderOptions `yaml:"finder"`
-	UnescapeQuery bool          `yaml:"unescape-query"`
+	UnescapeQuery bool          `yaml:"unescape-query" default:"true"`
 	Callback      string        `yaml:"callback"`
 }
 
@@ -92,4 +93,10 @@ func mergeMap[K comparable, V any](a, b map[K]V) map[K]V {
 		dest[k] = v
 	}
 	return dest
+}
+
+func (c *Completion) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	defaults.SetDefaults(c)
+	type raw Completion
+	return unmarshal((*raw)(c))
 }
