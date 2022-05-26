@@ -33,19 +33,20 @@ completions:
 
 	assert.Equal(t, 2, len(config.Completions))
 
-	actual, err := command.BuildFinderCommand(config.FinderCommand, config.Completions[0].Finder)
+	actual, err := command.BuildFinderCommand(config.FinderCommand, `""`, config.Completions[0].Finder)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	assert.Equal(t, "fzf --exit-0", actual)
+	assert.Equal(t, `fzf --query "" --exit-0`, actual)
 
-	actual, err = command.BuildFinderCommand(config.FinderCommand, config.Completions[1].Finder)
+	actual, err = command.BuildFinderCommand(config.FinderCommand, "x", config.Completions[1].Finder)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 	assert.True(t, strings.HasPrefix(actual, "fzf "))
+	assert.Contains(t, actual, " --query x")
 	assert.NotContains(t, actual, " --exit-0")
 	assert.Contains(t, actual, " --preview 'cat {}'")
 	assert.Contains(t, actual, " +i")

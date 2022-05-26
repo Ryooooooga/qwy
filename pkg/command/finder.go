@@ -9,10 +9,11 @@ import (
 	"gopkg.in/alessio/shellescape.v1"
 )
 
-func BuildFinderCommand(finder string, finderOptions config.FinderOptions) (string, error) {
+func BuildFinderCommand(finder string, escapedQuery string, finderOptions config.FinderOptions) (string, error) {
 	var b strings.Builder
 
 	b.WriteString(finder)
+	fmt.Fprintf(&b, " --query %s", escapedQuery)
 
 	for name, value := range finderOptions {
 		switch v := value.(type) {
@@ -48,13 +49,9 @@ func writePrimitiveOption(b *strings.Builder, name string, value any, selector s
 			b.WriteString(name)
 		}
 	case string:
-		b.WriteString(name)
-		b.WriteString(" ")
-		b.WriteString(shellescape.Quote(v))
+		fmt.Fprintf(b, "%s %s", name, shellescape.Quote(v))
 	case int:
-		b.WriteString(name)
-		b.WriteString(" ")
-		b.WriteString(fmt.Sprint(v))
+		fmt.Fprintf(b, "%s %d", name, v)
 	default:
 		return errors.Errorf("finder.%s must be string, int, or bool: %v", selector, value)
 	}
