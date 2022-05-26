@@ -46,12 +46,12 @@ func writePrimitiveOption(b *strings.Builder, name string, value any, selector s
 	switch v := value.(type) {
 	case bool:
 		if v {
-			b.WriteString(name)
+			b.WriteString(shellescape.Quote(name))
 		}
 	case string:
-		fmt.Fprintf(b, "%s %s", name, shellescape.Quote(v))
+		fmt.Fprintf(b, "%s %s", shellescape.Quote(name), shellescape.Quote(v))
 	case int:
-		fmt.Fprintf(b, "%s %d", name, v)
+		fmt.Fprintf(b, "%s %d", shellescape.Quote(name), v)
 	default:
 		return errors.Errorf("finder.%s must be string, int, or bool: %v", selector, value)
 	}
