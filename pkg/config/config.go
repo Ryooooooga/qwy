@@ -18,11 +18,12 @@ type Config struct {
 type Completions []*Completion
 
 type Completion struct {
-	Description string        `yaml:"description"`
-	Patterns    []string      `yaml:"patterns"`
-	Source      string        `yaml:"source"`
-	Finder      FinderOptions `yaml:"finder"`
-	Callback    string        `yaml:"callback"`
+	Description   string        `yaml:"description"`
+	Patterns      []string      `yaml:"patterns"`
+	Source        string        `yaml:"source"`
+	Finder        FinderOptions `yaml:"finder"`
+	UnescapeQuery bool          `yaml:"unescape-query"`
+	Callback      string        `yaml:"callback"`
 }
 
 type FinderOptions map[string]any

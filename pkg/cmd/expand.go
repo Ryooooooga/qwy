@@ -45,7 +45,11 @@ func (c *ExpandCmd) Run() error {
 	prefix := c.LBuffer[:lastArgIndex]
 	query := c.LBuffer[lastArgIndex:]
 
-	escapedQuery := fmt.Sprintf(`"${%s}"`, QUERY)
+	queryFlag := ""
+	if completion.UnescapeQuery {
+		queryFlag = "(Q)"
+	}
+	escapedQuery := fmt.Sprintf(`"${%s%s}"`, queryFlag, QUERY)
 
 	finderCommand, err := command.BuildFinderCommand(config.FinderCommand, escapedQuery, completion.Finder)
 	if err != nil {
