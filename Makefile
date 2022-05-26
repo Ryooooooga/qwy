@@ -10,7 +10,7 @@ LDFLAGS += -X "main.date=${DATE}"
 .PHONY: all
 all: deps qwy
 
-qwy: $(shell find . -name "*.go")
+qwy: $(shell find . -name "*.go") pkg/cmd/init.zsh
 	go build -v --ldflags='${LDFLAGS}'
 
 .PHONY: deps

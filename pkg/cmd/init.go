@@ -1,13 +1,17 @@
 package cmd
 
 import (
+	_ "embed"
 	"fmt"
 )
 
 type InitCmd struct {
 }
 
+//go:embed init.zsh
+var initScript string
+
 func (c *InitCmd) Run() error {
-	fmt.Println("init")
+	fmt.Print(initScript)
 	return nil
 }
