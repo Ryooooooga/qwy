@@ -7,6 +7,7 @@ import (
 
 	"github.com/Ryooooooga/qwy/pkg/command"
 	"github.com/Ryooooooga/qwy/pkg/config"
+	"github.com/Ryooooooga/qwy/pkg/maps"
 	"github.com/Ryooooooga/qwy/pkg/matcher"
 	"gopkg.in/alessio/shellescape.v1"
 )
@@ -51,7 +52,12 @@ func (c *ExpandCmd) Run() error {
 	}
 	escapedQuery := fmt.Sprintf(`"${%s%s}"`, queryFlag, QUERY)
 
-	finderCommand, err := command.BuildFinderCommand(config.FinderCommand, escapedQuery, completion.Finder)
+	finderOptions := maps.Merge(
+		map[string]any{"--query": command.EscapedString(escapedQuery)},
+		completion.Finder,
+	)
+
+	finderCommand, err := command.BuildFinderCommand(config.FinderCommand, finderOptions)
 	if err != nil {
 		return err
 	}

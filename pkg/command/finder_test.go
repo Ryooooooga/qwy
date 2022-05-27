@@ -6,6 +6,7 @@ import (
 
 	"github.com/Ryooooooga/qwy/pkg/command"
 	"github.com/Ryooooooga/qwy/pkg/config"
+	"github.com/Ryooooooga/qwy/pkg/maps"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,20 +34,21 @@ completions:
 
 	assert.Equal(t, 2, len(config.Completions))
 
-	actual, err := command.BuildFinderCommand(config.FinderCommand, `""`, config.Completions[0].Finder)
+	actual, err := command.BuildFinderCommand(config.FinderCommand, config.Completions[0].Finder)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	assert.Equal(t, `fzf --query "" --exit-0`, actual)
+	assert.Equal(t, `fzf --exit-0`, actual)
 
-	actual, err = command.BuildFinderCommand(config.FinderCommand, "x", config.Completions[1].Finder)
+	preview := map[string]any{"--query": command.EscapedString(`"${query}"`)}
+	actual, err = command.BuildFinderCommand(config.FinderCommand, maps.Merge(preview, config.Completions[1].Finder))
 	if err != nil {
 		t.Error(err)
 		return
 	}
 	assert.True(t, strings.HasPrefix(actual, "fzf "))
-	assert.Contains(t, actual, " --query x")
+	assert.Contains(t, actual, ` --query "${query}"`)
 	assert.NotContains(t, actual, " --exit-0")
 	assert.Contains(t, actual, " --preview 'cat {}'")
 	assert.Contains(t, actual, " +i")

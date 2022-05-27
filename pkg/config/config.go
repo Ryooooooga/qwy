@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/Ryooooooga/qwy/pkg/maps"
 	"gopkg.in/mcuadros/go-defaults.v1"
 	"gopkg.in/yaml.v3"
 )
@@ -63,7 +64,7 @@ func loadConfig(r io.Reader) (*Config, error) {
 	}
 
 	for _, c := range config.Completions {
-		c.Finder = mergeMap(config.Finder, c.Finder)
+		c.Finder = maps.Merge(config.Finder, c.Finder)
 	}
 
 	return config, nil
@@ -82,17 +83,6 @@ func loadConfigFromFile(path string) (*Config, error) {
 func LoadConfigFromText(text string) (*Config, error) {
 	r := strings.NewReader(text)
 	return loadConfig(r)
-}
-
-func mergeMap[K comparable, V any](a, b map[K]V) map[K]V {
-	dest := make(map[K]V, len(a)+len(b))
-	for k, v := range a {
-		dest[k] = v
-	}
-	for k, v := range b {
-		dest[k] = v
-	}
-	return dest
 }
 
 func (c *Completion) UnmarshalYAML(unmarshal func(interface{}) error) error {
