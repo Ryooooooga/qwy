@@ -1,5 +1,5 @@
 QWY_TRIGGER_KEY="${QWY_TRIGGER_KEY:-^I}"
-QWY_DEFAULT_COMPLETE="${QWY_DEFAULT_COMPLETE-${$(\builtin bindkey "$QWY_TRIGGER_KEY")[(s: :w)2]}}"
+QWY_DEFAULT_ACTION="${QWY_DEFAULT_ACTION-${$(\builtin bindkey "$QWY_TRIGGER_KEY")[(s: :w)2]}}"
 
 \builtin zle -N qwy::complete
 qwy::complete() {
@@ -7,8 +7,8 @@ qwy::complete() {
     if [[ -n "${out}" ]]; then
         \builtin eval "${out}"
         \builtin zle reset-prompt
-    elif [[ -n "${QWY_DEFAULT_COMPLETE}" && "${QWY_DEFAULT_COMPLETE}" != "undefined-key" ]]; then
-        \builtin zle "${QWY_DEFAULT_COMPLETE}"
+    elif [[ -n "${QWY_DEFAULT_ACTION}" && "${QWY_DEFAULT_ACTION}" != "undefined-key" ]]; then
+        \builtin zle "${QWY_DEFAULT_ACTION}"
     fi
 }
 
