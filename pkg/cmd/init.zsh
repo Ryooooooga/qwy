@@ -1,5 +1,5 @@
 QWY_TRIGGER_KEY="${QWY_TRIGGER_KEY:-^I}"
-QWY_DEFAULT_COMPLETE="${QWY_DEFAULT_COMPLETE:-${$(\builtin bindkey "$QWY_TRIGGER_KEY")[(s: :w)2]}}"
+QWY_DEFAULT_COMPLETE="${QWY_DEFAULT_COMPLETE-${$(\builtin bindkey "$QWY_TRIGGER_KEY")[(s: :w)2]}}"
 
 \builtin zle -N qwy::complete
 qwy::complete() {
