@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Ryooooooga/qwy/pkg/maps"
 	"gopkg.in/mcuadros/go-defaults.v1"
 	"gopkg.in/yaml.v3"
 )
@@ -20,12 +19,11 @@ type Config struct {
 type Completions []*Completion
 
 type Completion struct {
-	Description   string        `yaml:"description"`
-	Patterns      []string      `yaml:"patterns"`
-	Source        string        `yaml:"source"`
-	Finder        FinderOptions `yaml:"finder"`
-	UnescapeQuery bool          `yaml:"unescape-query" default:"true"`
-	Callback      string        `yaml:"callback"`
+	Description string        `yaml:"description"`
+	Patterns    []string      `yaml:"patterns"`
+	Source      string        `yaml:"source"`
+	Finder      FinderOptions `yaml:"finder"`
+	Callback    string        `yaml:"callback"`
 }
 
 type FinderOptions map[string]any
@@ -61,10 +59,6 @@ func loadConfig(r io.Reader) (*Config, error) {
 	config := defaultConfig()
 	if err := yaml.Unmarshal(bytes, config); err != nil {
 		return nil, err
-	}
-
-	for _, c := range config.Completions {
-		c.Finder = maps.Merge(config.Finder, c.Finder)
 	}
 
 	return config, nil

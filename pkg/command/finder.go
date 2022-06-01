@@ -9,8 +9,6 @@ import (
 	"gopkg.in/alessio/shellescape.v1"
 )
 
-type EscapedString string
-
 func BuildFinderCommand(finder string, finderOptions config.FinderOptions) (string, error) {
 	var b strings.Builder
 
@@ -49,10 +47,8 @@ func writePrimitiveOption(b *strings.Builder, name string, value any, selector s
 		if v {
 			b.WriteString(shellescape.Quote(name))
 		}
-	case EscapedString:
-		fmt.Fprintf(b, "%s %s", shellescape.Quote(name), v)
 	case string:
-		fmt.Fprintf(b, "%s %s", shellescape.Quote(name), shellescape.Quote(v))
+		fmt.Fprintf(b, "%s %s", shellescape.Quote(name), quoteValue(v))
 	case int:
 		fmt.Fprintf(b, "%s %d", shellescape.Quote(name), v)
 	default:
@@ -60,4 +56,15 @@ func writePrimitiveOption(b *strings.Builder, name string, value any, selector s
 	}
 
 	return nil
+}
+
+var quoteReplacer *strings.Replacer = strings.NewReplacer(
+	`\$`, "\\$",
+	"\\`", "\\\\`",
+	`\`, `\\`,
+	`"`, `\"`,
+)
+
+func quoteValue(s string) string {
+	return `"` + quoteReplacer.Replace(s) + `"`
 }

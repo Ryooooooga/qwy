@@ -15,13 +15,17 @@ import (
 const (
 	LBUFFER  string = "LBUFFER"
 	RBUFFER  string = "RBUFFER"
+	QUERY    string = "query"
 	PREFIX   string = "__qwy_prefix"
-	QUERY    string = "__qwy_query"
 	SOURCE   string = "__qwy_source"
 	FINDER   string = "__qwy_finder"
 	CALLBACK string = "__qwy_callback"
 	OUTPUT   string = "__qwy_output"
 )
+
+var defaultFinderOptions config.FinderOptions = config.FinderOptions{
+	"--query": `${(Q)query}`,
+}
 
 type ExpandCmd struct {
 	LBuffer string `name:"lbuffer" short:"l" required:"" help:"$LBUFFER"`
@@ -46,17 +50,7 @@ func (c *ExpandCmd) Run() error {
 	prefix := c.LBuffer[:lastArgIndex]
 	query := c.LBuffer[lastArgIndex:]
 
-	queryFlag := ""
-	if completion.UnescapeQuery {
-		queryFlag = "(Q)"
-	}
-	escapedQuery := fmt.Sprintf(`"${%s%s}"`, queryFlag, QUERY)
-
-	finderOptions := maps.Merge(
-		map[string]any{"--query": command.EscapedString(escapedQuery)},
-		completion.Finder,
-	)
-
+	finderOptions := maps.Merge(defaultFinderOptions, config.Finder, completion.Finder)
 	finderCommand, err := command.BuildFinderCommand(config.FinderCommand, finderOptions)
 	if err != nil {
 		return err
@@ -68,8 +62,8 @@ func (c *ExpandCmd) Run() error {
 
 func writeScript(w io.Writer, prefix, query, sourceCommand, finderCommand, callbackCommand string) {
 	fmt.Fprintf(w, "local %s;\n", OUTPUT)
-	fmt.Fprintf(w, "local %s=%s;\n", PREFIX, shellescape.Quote(prefix))
 	fmt.Fprintf(w, "local %s=%s;\n", QUERY, shellescape.Quote(query))
+	fmt.Fprintf(w, "local %s=%s;\n", PREFIX, shellescape.Quote(prefix))
 	fmt.Fprintf(w, "local %s=%s;\n", SOURCE, shellescape.Quote(sourceCommand))
 	fmt.Fprintf(w, "local %s=%s;\n", FINDER, shellescape.Quote(finderCommand))
 	if len(callbackCommand) > 0 {
