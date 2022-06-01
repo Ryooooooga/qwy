@@ -8,7 +8,7 @@ require (
 	github.com/stretchr/testify v1.7.1
 	gopkg.in/alessio/shellescape.v1 v1.0.0-20170105083845-52074bc9df61
 	gopkg.in/mcuadros/go-defaults.v1 v1.1.0
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
