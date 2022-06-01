@@ -67,6 +67,7 @@ func (c *ExpandCmd) Run() error {
 }
 
 func writeScript(w io.Writer, prefix, query, sourceCommand, finderCommand, callbackCommand string) {
+	fmt.Fprintf(w, "local %s;\n", OUTPUT)
 	fmt.Fprintf(w, "local %s=%s;\n", PREFIX, shellescape.Quote(prefix))
 	fmt.Fprintf(w, "local %s=%s;\n", QUERY, shellescape.Quote(query))
 	fmt.Fprintf(w, "local %s=%s;\n", SOURCE, shellescape.Quote(sourceCommand))
