@@ -6,30 +6,42 @@ import (
 	"github.com/Ryooooooga/qwy/pkg/config"
 )
 
-func FindMatchedCompletion(completions config.Completions, lbuffer, rbuffer string) (*config.Completion, error) {
+type Captures map[string]string
+
+func FindMatchedCompletion(completions config.Completions, lbuffer, rbuffer string) (*config.Completion, Captures, error) {
 	for _, c := range completions {
-		matched, err := isMatched(c, lbuffer, rbuffer)
+		matched, captures, err := isMatched(c, lbuffer, rbuffer)
 		if err != nil {
-			return nil, err
+			return nil, Captures{}, err
 		}
 		if matched {
-			return c, nil
+			return c, captures, nil
 		}
 	}
 
-	return nil, nil
+	return nil, Captures{}, nil
 }
 
-func isMatched(completion *config.Completion, lbuffer, rbuffer string) (bool, error) {
+func isMatched(completion *config.Completion, lbuffer, rbuffer string) (bool, Captures, error) {
 	for _, pattern := range completion.Patterns {
 		r, err := regexp.Compile(pattern)
 		if err != nil {
-			return false, err
+			return false, Captures{}, err
 		}
-		if r.MatchString(lbuffer) {
-			return true, nil
+
+		matches := r.FindStringSubmatch(lbuffer)
+		if len(matches) == 0 {
+			continue
 		}
+
+		captures := Captures{}
+		for i, name := range r.SubexpNames() {
+			if len(name) > 0 {
+				captures[name] = matches[i]
+			}
+		}
+		return true, captures, nil
 	}
 
-	return false, nil
+	return false, Captures{}, nil
 }

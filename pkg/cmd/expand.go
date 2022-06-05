@@ -38,7 +38,7 @@ func (c *ExpandCmd) Run() error {
 		return err
 	}
 
-	completion, err := matcher.FindMatchedCompletion(config.Completions, c.LBuffer, c.RBuffer)
+	completion, captures, err := matcher.FindMatchedCompletion(config.Completions, c.LBuffer, c.RBuffer)
 	if err != nil {
 		return err
 	}
@@ -50,19 +50,27 @@ func (c *ExpandCmd) Run() error {
 	prefix := c.LBuffer[:lastArgIndex]
 	query := c.LBuffer[lastArgIndex:]
 
+	if _, ok := captures[QUERY]; !ok {
+		captures[QUERY] = query
+	}
+
 	finderOptions := maps.Merge(defaultFinderOptions, config.Finder, completion.Finder)
 	finderCommand, err := command.BuildFinderCommand(config.FinderCommand, finderOptions)
 	if err != nil {
 		return err
 	}
 
-	writeScript(os.Stdout, prefix, query, completion.Source, finderCommand, completion.Callback)
+	writeScript(os.Stdout, prefix, captures, completion.Source, finderCommand, completion.Callback)
 	return nil
 }
 
-func writeScript(w io.Writer, prefix, query, sourceCommand, finderCommand, callbackCommand string) {
+func writeScript(w io.Writer, prefix string, captures matcher.Captures, sourceCommand, finderCommand, callbackCommand string) {
 	fmt.Fprintf(w, "local %s;\n", OUTPUT)
-	fmt.Fprintf(w, "local %s=%s;\n", QUERY, shellescape.Quote(query))
+
+	for name, capture := range captures {
+		fmt.Fprintf(w, "local %s=%s;\n", name, shellescape.Quote(capture))
+	}
+
 	fmt.Fprintf(w, "local %s=%s;\n", PREFIX, shellescape.Quote(prefix))
 	fmt.Fprintf(w, "local %s=%s;\n", SOURCE, shellescape.Quote(sourceCommand))
 	fmt.Fprintf(w, "local %s=%s;\n", FINDER, shellescape.Quote(finderCommand))

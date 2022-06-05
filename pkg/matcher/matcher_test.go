@@ -21,39 +21,54 @@ completions:
   - description: git
     patterns:
       - ^git\s
+
+  - description: cd
+    patterns:
+      - ^cd\s+(?P<cap>.*)
 `)
 	assert.Nil(t, err)
 
 	scenarios := []struct {
-		lbuffer  string
-		rbuffer  string
-		expected string
+		lbuffer             string
+		rbuffer             string
+		expectedDescription string
+		expectedCaptures    matcher.Captures
 	}{
 		{
-			lbuffer:  "git ",
-			rbuffer:  "",
-			expected: "git",
+			lbuffer:             "git ",
+			rbuffer:             "",
+			expectedDescription: "git",
+			expectedCaptures:    matcher.Captures{},
 		},
 		{
-			lbuffer:  "git add ",
-			rbuffer:  "",
-			expected: "git-add",
+			lbuffer:             "git add ",
+			rbuffer:             "",
+			expectedDescription: "git-add",
+			expectedCaptures:    matcher.Captures{},
 		},
 		{
-			lbuffer:  "not-matched",
-			rbuffer:  "",
-			expected: "",
+			lbuffer:             "cd ~/",
+			rbuffer:             "",
+			expectedDescription: "cd",
+			expectedCaptures:    matcher.Captures{"cap": "~/"},
+		},
+		{
+			lbuffer:             "not-matched",
+			rbuffer:             "",
+			expectedDescription: "",
+			expectedCaptures:    matcher.Captures{},
 		},
 	}
 
 	for i, s := range scenarios {
 		t.Run(fmt.Sprint(i), func(t *testing.T) {
-			c, err := matcher.FindMatchedCompletion(config.Completions, s.lbuffer, s.rbuffer)
+			c, cap, err := matcher.FindMatchedCompletion(config.Completions, s.lbuffer, s.rbuffer)
 			assert.Nil(t, err)
 
-			if len(s.expected) > 0 {
+			if len(s.expectedDescription) > 0 {
 				assert.NotNil(t, c)
-				assert.Equal(t, s.expected, c.Description)
+				assert.Equal(t, s.expectedDescription, c.Description)
+				assert.Equal(t, s.expectedCaptures, cap)
 			} else {
 				assert.Nil(t, c)
 			}
