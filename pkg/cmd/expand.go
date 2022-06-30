@@ -20,7 +20,6 @@ const (
 	SOURCE   string = "__qwy_source"
 	FINDER   string = "__qwy_finder"
 	CALLBACK string = "__qwy_callback"
-	OUTPUT   string = "__qwy_output"
 )
 
 var defaultFinderOptions config.FinderOptions = config.FinderOptions{
@@ -65,8 +64,6 @@ func (c *ExpandCmd) Run() error {
 }
 
 func writeScript(w io.Writer, prefix string, captures matcher.Captures, sourceCommand, finderCommand, callbackCommand string) {
-	fmt.Fprintf(w, "local %s;\n", OUTPUT)
-
 	for name, capture := range captures {
 		fmt.Fprintf(w, "local %s=%s;\n", name, shellescape.Quote(capture))
 	}
@@ -74,14 +71,5 @@ func writeScript(w io.Writer, prefix string, captures matcher.Captures, sourceCo
 	fmt.Fprintf(w, "local %s=%s;\n", PREFIX, shellescape.Quote(prefix))
 	fmt.Fprintf(w, "local %s=%s;\n", SOURCE, shellescape.Quote(sourceCommand))
 	fmt.Fprintf(w, "local %s=%s;\n", FINDER, shellescape.Quote(finderCommand))
-	if len(callbackCommand) > 0 {
-		fmt.Fprintf(w, "local %s=%s;\n", CALLBACK, shellescape.Quote(callbackCommand))
-	}
-
-	fmt.Fprintf(w, `if %s="$(\builtin eval "${%s}" | \builtin eval "${%s}")";then `, OUTPUT, SOURCE, FINDER)
-	if len(callbackCommand) > 0 {
-		fmt.Fprintf(w, `%s="$(\builtin eval "${%s}" <<<"${%s}")";`, OUTPUT, CALLBACK, OUTPUT)
-	}
-	fmt.Fprintf(w, `%s="${%s}${%s}";`, LBUFFER, PREFIX, OUTPUT)
-	fmt.Fprintln(w, "fi")
+	fmt.Fprintf(w, "local %s=%s;\n", CALLBACK, shellescape.Quote(callbackCommand))
 }
