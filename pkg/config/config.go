@@ -2,7 +2,6 @@ package config
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -51,13 +50,8 @@ func LoadConfig() (*Config, error) {
 }
 
 func loadConfig(r io.Reader) (*Config, error) {
-	bytes, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
-
 	config := defaultConfig()
-	if err := yaml.Unmarshal(bytes, config); err != nil {
+	if err := yaml.NewDecoder(r).Decode(config); err != nil {
 		return nil, err
 	}
 
