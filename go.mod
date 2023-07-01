@@ -3,7 +3,7 @@ module github.com/Ryooooooga/qwy
 go 1.18
 
 require (
-	github.com/alecthomas/kong v0.7.1
+	github.com/alecthomas/kong v0.8.0
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.7.2
 	gopkg.in/alessio/shellescape.v1 v1.0.0-20170105083845-52074bc9df61
