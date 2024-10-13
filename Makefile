@@ -15,7 +15,6 @@ qwy: $(shell find . -name "*.go") pkg/cmd/init.zsh
 
 .PHONY: deps
 deps:
-	go get -d -v
 	go mod tidy
 
 .PHONY: test
