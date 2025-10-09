@@ -65,11 +65,11 @@ func (c *ExpandCmd) Run() error {
 
 func writeScript(w io.Writer, prefix string, captures matcher.Captures, sourceCommand, finderCommand, callbackCommand string) {
 	for name, capture := range captures {
-		fmt.Fprintf(w, "local %s=%s;\n", name, shellescape.Quote(capture))
+		_, _ = fmt.Fprintf(w, "local %s=%s;\n", name, shellescape.Quote(capture))
 	}
 
-	fmt.Fprintf(w, "local %s=%s;\n", PREFIX, shellescape.Quote(prefix))
-	fmt.Fprintf(w, "local %s=%s;\n", SOURCE, shellescape.Quote(sourceCommand))
-	fmt.Fprintf(w, "local %s=%s;\n", FINDER, shellescape.Quote(finderCommand))
-	fmt.Fprintf(w, "local %s=%s;\n", CALLBACK, shellescape.Quote(callbackCommand))
+	_, _ = fmt.Fprintf(w, "local %s=%s;\n", PREFIX, shellescape.Quote(prefix))
+	_, _ = fmt.Fprintf(w, "local %s=%s;\n", SOURCE, shellescape.Quote(sourceCommand))
+	_, _ = fmt.Fprintf(w, "local %s=%s;\n", FINDER, shellescape.Quote(finderCommand))
+	_, _ = fmt.Fprintf(w, "local %s=%s;\n", CALLBACK, shellescape.Quote(callbackCommand))
 }

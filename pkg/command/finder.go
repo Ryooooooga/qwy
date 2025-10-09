@@ -48,9 +48,9 @@ func writePrimitiveOption(b *strings.Builder, name string, value any, selector s
 			b.WriteString(shellescape.Quote(name))
 		}
 	case string:
-		fmt.Fprintf(b, "%s %s", shellescape.Quote(name), quoteValue(v))
+		_, _ = fmt.Fprintf(b, "%s %s", shellescape.Quote(name), quoteValue(v))
 	case int:
-		fmt.Fprintf(b, "%s %d", shellescape.Quote(name), v)
+		_, _ = fmt.Fprintf(b, "%s %d", shellescape.Quote(name), v)
 	default:
 		return errors.Errorf("finder.%s must be string, int, or bool: %v", selector, value)
 	}
